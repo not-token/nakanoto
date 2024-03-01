@@ -1,0 +1,84 @@
+---
+id: 0
+name: Devnet deployment
+network: devnet
+stacks-node: "http://localhost:20443"
+bitcoin-node: "http://devnet:devnet@localhost:18443"
+plan:
+  batches:
+    - id: 0
+      transactions:
+        - contract-publish:
+            contract-name: micro-nthng
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 9870
+            path: contracts/micro-nthng.clar
+            anchor-block-only: true
+            clarity-version: 1
+        - contract-publish:
+            contract-name: sip-010-trait-ft-standard
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 8400
+            path: contracts/sip-010-trait-ft-standard.clar
+            anchor-block-only: true
+            clarity-version: 1
+        - contract-publish:
+            contract-name: wrapped-nothing-v8
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 25220
+            path: contracts/wrapped-nothing-v8.clar
+            anchor-block-only: true
+            clarity-version: 1
+        - contract-publish:
+            contract-name: sip-10-ft-standard
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 8160
+            path: contracts/sip-10-ft-standard.clar
+            anchor-block-only: true
+            clarity-version: 1
+        - contract-publish:
+            contract-name: wrapped-nothing-v5
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 24140
+            path: contracts/wrapped-nothing-v5.clar
+            anchor-block-only: true
+            clarity-version: 1
+        - contract-publish:
+            contract-name: wrapped-nothing-v6
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 24740
+            path: contracts/wrapped-nothing-v6.clar
+            anchor-block-only: true
+            clarity-version: 1
+      epoch: "2.0"
+    - id: 1
+      transactions:
+        - contract-publish:
+            contract-name: airdrop
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 511390
+            path: contracts/airdrop.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: fis-com-fis-sev
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 9690
+            path: contracts/fis-com-fis-sev.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: not-lockup
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 54760
+            path: contracts/not-lockup.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: not-token
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 9080
+            path: contracts/not-token.clar
+            anchor-block-only: true
+            clarity-version: 2
+      epoch: "2.4"
