@@ -2,7 +2,8 @@ import { createQueryKeys } from "@lukemorales/query-key-factory"
 
 import { AccountsApi, Configuration } from "@stacks/blockchain-api-client"
 import { StacksNetwork } from "@stacks/network"
-const SNAPSHOT_BLOCK_HEIGHT = 141300
+const SNAPSHOT_BLOCK_HEIGHT = 141500
+throw new Error("set SNAPSHOT_BLOCK_HEIGHT to something")
 
 export const accountsQK = createQueryKeys("accounts", {
   balances: ({

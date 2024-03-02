@@ -127,18 +127,36 @@ function ContractCallVote() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <Walleton onClick={(provider) => lockFn(provider, "genesis-wrap")}>
-        Wrap all
-      </Walleton>
+      <div className="flex flex-col items-center gap-8">
+        <p className="text-lg font-bold">
+          Use one of the wallets to rewrap $MNO and $WMNO to $NOT
+        </p>
+        <p className="text-base">
+          You will commit all the $MNO and $WMNO in your wallet
+          <br />
+          please make sure to check the contract and post conditions
+        </p>
+        <a
+          href={import.meta.env.BASE_URL + "Nothing.pdf"}
+          target="_blank"
+          className="underline underline-offset-4"
+          rel="noopener noreferrer"
+        >
+          Read explainer here
+        </a>
+        <Walleton onClick={(provider) => lockFn(provider, "genesis-wrap")}>
+          Wrap all
+        </Walleton>
+      </div>
 
-      <div className="flex flex-col items-center gap-4">
+      {/* <div className="flex flex-col items-center gap-4">
         <p className="text-lg font-bold">You can always</p>
         <Walleton
           onClick={(provider) => lockFn(provider, "genesis-unwrap-wmno")}
         >
           Unwrap all
         </Walleton>
-      </div>
+      </div> */}
     </div>
   )
 }
