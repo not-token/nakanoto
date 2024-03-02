@@ -2,16 +2,42 @@ import { useConnect } from "@stacks/connect-react"
 import { useQuery } from "@tanstack/react-query"
 import { queries } from "../stacks-api/queries"
 import { userSession } from "../user-session"
-import { StacksDevnet, StacksMainnet } from "@stacks/network"
+import { StacksMainnet } from "@stacks/network"
 import React, { useCallback, useMemo } from "react"
 import { AddressBalanceResponse } from "@stacks/blockchain-api-client"
-import { PostConditionMode } from "@stacks/transactions"
-const network = import.meta.env.DEV ? new StacksDevnet() : new StacksMainnet()
-const deployerAddress = import.meta.env.DEV
-  ? "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"
-  : "SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ"
+import {
+  FungibleConditionCode,
+  FungiblePostCondition,
+  PostConditionMode,
+  createAssetInfo,
+  createFungiblePostCondition,
+} from "@stacks/transactions"
+const network = new StacksMainnet()
+const deployerAddress = "SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ"
+type tokenDescriptor = `${string}.${string}::${string}`
 
-const mnoTokenId = deployerAddress + ".micro-nthng::micro-nothing"
+const mnoTokenId: tokenDescriptor = `${deployerAddress}.micro-nthng::micro-nothing`
+const wmnoTokenId: tokenDescriptor = `${deployerAddress}.micro-nthng::wrapped-nthng`
+
+const createTokenPC = (
+  tokenId: tokenDescriptor,
+  amount: number,
+  owner: string,
+) => {
+  const [tokenAddress, contractToken] = tokenId.split(".") as [string, string]
+  const [contractName, tokenName] = contractToken.split("::") as [
+    string,
+    string,
+  ]
+  return amount
+    ? createFungiblePostCondition(
+        owner,
+        FungibleConditionCode.Equal,
+        amount,
+        createAssetInfo(tokenAddress, contractName, tokenName),
+      )
+    : null
+}
 
 function Walleton({
   onClick,
@@ -62,9 +88,7 @@ function ContractCallVote() {
   const { doContractCall } = useConnect()
   let address = ""
   if (userSession.isUserSignedIn()) {
-    address = import.meta.env.DEV
-      ? userSession.loadUserData()?.profile.stxAddress.testnet
-      : userSession.loadUserData()?.profile.stxAddress.mainnet
+    address = userSession.loadUserData()?.profile.stxAddress.mainnet
   }
 
   const { data } = useQuery({
@@ -76,20 +100,23 @@ function ContractCallVote() {
   const mnoBalance = useMemo(() => {
     return data ? Number(getTokenBalance(data, mnoTokenId)) : 0
   }, [data])
-
-  const lockFnName = useMemo(() => {
-    return mnoBalance ? "lock-mno-and-wmno" : "lock-wmno"
-  }, [mnoBalance])
+  const wmnoBalance = useMemo(() => {
+    return data ? Number(getTokenBalance(data, wmnoTokenId)) : 0
+  }, [data])
 
   const lockFn = useCallback(
     (provider: "leather" | "xverse", fnName: string) => {
       doContractCall(
         {
           contractAddress: deployerAddress,
-          contractName: "not-lockup",
+          contractName: "genesis-wrapper",
           functionName: fnName,
           functionArgs: [],
-          postConditionMode: PostConditionMode.Allow,
+          postConditionMode: PostConditionMode.Deny,
+          postConditions: [
+            createTokenPC(wmnoTokenId, wmnoBalance, address),
+            createTokenPC(mnoTokenId, mnoBalance, address),
+          ].filter((item) => item) as FungiblePostCondition[],
           network,
         },
         providers[provider],
@@ -100,14 +127,16 @@ function ContractCallVote() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <Walleton onClick={(provider) => lockFn(provider, lockFnName)}>
-        LOCK
+      <Walleton onClick={(provider) => lockFn(provider, "genesis-wrap")}>
+        Wrap all
       </Walleton>
 
       <div className="flex flex-col items-center gap-4">
         <p className="text-lg font-bold">You can always</p>
-        <Walleton onClick={(provider) => lockFn(provider, "unlock-wmno")}>
-          UNLOCK
+        <Walleton
+          onClick={(provider) => lockFn(provider, "genesis-unwrap-wmno")}
+        >
+          Unwrap all
         </Walleton>
       </div>
     </div>
