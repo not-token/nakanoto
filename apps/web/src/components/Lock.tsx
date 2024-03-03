@@ -71,7 +71,9 @@ function Walleton({
 
 const getTokenBalance = (balances: AddressBalanceResponse, tokenId: string) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (balances?.fungible_tokens[tokenId] as any)?.balance
+  return (
+    (balances?.fungible_tokens[tokenId] as { balance: number })?.balance || 0
+  )
 }
 const providers = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
