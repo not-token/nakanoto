@@ -12,6 +12,9 @@ import {
   createAssetInfo,
   createFungiblePostCondition,
 } from "@stacks/transactions"
+
+const SNAPSHOT_BLOCK_HEIGHT = 141427
+
 const network = new StacksMainnet()
 const deployerAddress = "SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ"
 type tokenDescriptor = `${string}.${string}::${string}`
@@ -93,18 +96,51 @@ function ContractCallVote() {
     address = userSession.loadUserData()?.profile.stxAddress.mainnet
   }
 
-  const { data } = useQuery({
+  const { data: snapShotBalances } = useQuery({
+    ...queries.accounts.balances({
+      address,
+      network,
+      untilBlock: SNAPSHOT_BLOCK_HEIGHT.toString(),
+    }),
+  })
+
+  const { data: currentBalances } = useQuery({
     ...queries.accounts.balances({
       address,
       network,
     }),
   })
-  const mnoBalance = useMemo(() => {
-    return data ? Number(getTokenBalance(data, mnoTokenId)) : 0
-  }, [data])
-  const wmnoBalance = useMemo(() => {
-    return data ? Number(getTokenBalance(data, wmnoTokenId)) : 0
-  }, [data])
+
+  const { mnoBalance: snapShotMNOBalance, wmnoBalance: snapShotWMNOBalance } =
+    useMemo(() => {
+      return {
+        mnoBalance: snapShotBalances
+          ? Number(getTokenBalance(snapShotBalances, mnoTokenId))
+          : 0,
+        wmnoBalance: snapShotBalances
+          ? Number(getTokenBalance(snapShotBalances, wmnoTokenId))
+          : 0,
+      }
+    }, [snapShotBalances])
+
+  const { mnoBalance: currentMNOBalance, wmnoBalance: currentWMNOBalance } =
+    useMemo(() => {
+      return {
+        mnoBalance: currentBalances
+          ? Number(getTokenBalance(currentBalances, mnoTokenId))
+          : 0,
+        wmnoBalance: currentBalances
+          ? Number(getTokenBalance(currentBalances, wmnoTokenId))
+          : 0,
+      }
+    }, [currentBalances])
+
+  const isEligibleToMint = useMemo(() => {
+    const eligibleAmounts = snapShotMNOBalance + snapShotWMNOBalance
+    const currentBalance = currentMNOBalance + currentWMNOBalance
+
+    return currentBalance >= eligibleAmounts
+  }, [])
 
   const lockFn = useCallback(
     (provider: "leather" | "xverse", fnName: string) => {
@@ -116,8 +152,8 @@ function ContractCallVote() {
           functionArgs: [],
           postConditionMode: PostConditionMode.Deny,
           postConditions: [
-            createTokenPC(wmnoTokenId, wmnoBalance, address),
-            createTokenPC(mnoTokenId, mnoBalance, address),
+            createTokenPC(wmnoTokenId, snapShotWMNOBalance, address),
+            createTokenPC(mnoTokenId, snapShotMNOBalance, address),
           ].filter((item) => item) as FungiblePostCondition[],
           network,
         },
@@ -139,7 +175,7 @@ function ContractCallVote() {
           please make sure to check the contract and post conditions
           <br />
         </p>
-        {mnoBalance + wmnoBalance ? (
+        {snapShotMNOBalance + snapShotWMNOBalance ? (
           <p className=" ">
             As long as these tokens are in your wallet
             <br />
@@ -150,8 +186,10 @@ function ContractCallVote() {
             <br />
             transfer them back or top up just enough to get this amount
             <br />
-            <br /> {wmnoBalance ? wmnoBalance + " $WMNO" : null} <br />{" "}
-            {mnoBalance ? mnoBalance + " $MNO" : null}
+            <br /> {snapShotWMNOBalance
+              ? snapShotWMNOBalance + " $WMNO"
+              : null}{" "}
+            <br /> {snapShotMNOBalance ? snapShotMNOBalance + " $MNO" : null}
           </p>
         ) : null}
         <a
@@ -162,9 +200,17 @@ function ContractCallVote() {
         >
           Read explainer here
         </a>
-        <Walleton onClick={(provider) => lockFn(provider, "genesis-wrap")}>
-          Wrap all
-        </Walleton>
+        {isEligibleToMint ? (
+          <Walleton onClick={(provider) => lockFn(provider, "genesis-wrap")}>
+            Wrap all
+          </Walleton>
+        ) : (
+          <p className="text-red-500 text-center">
+            Current balance is less than eligible balance <br />
+            please top up or transfer back to continue <br />
+            There is no time limit take all the time you need
+          </p>
+        )}
       </div>
 
       {/* <div className="flex flex-col items-center gap-4">

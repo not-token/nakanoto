@@ -2,15 +2,16 @@ import { createQueryKeys } from "@lukemorales/query-key-factory"
 
 import { AccountsApi, Configuration } from "@stacks/blockchain-api-client"
 import { StacksNetwork } from "@stacks/network"
-const SNAPSHOT_BLOCK_HEIGHT = 141427
 
 export const accountsQK = createQueryKeys("accounts", {
   balances: ({
     address,
     network,
+    untilBlock,
   }: {
     address: string
     network: StacksNetwork
+    untilBlock?: string
   }) => ({
     queryKey: [address, network],
     queryFn: async () => {
@@ -22,7 +23,7 @@ export const accountsQK = createQueryKeys("accounts", {
       return accountsApi.getAccountBalance({
         principal: address,
         unanchored: false,
-        untilBlock: `${SNAPSHOT_BLOCK_HEIGHT}`,
+        untilBlock,
       })
     },
   }),
