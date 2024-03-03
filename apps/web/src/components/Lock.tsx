@@ -17,7 +17,7 @@ const deployerAddress = "SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ"
 type tokenDescriptor = `${string}.${string}::${string}`
 
 const mnoTokenId: tokenDescriptor = `${deployerAddress}.micro-nthng::micro-nothing`
-const wmnoTokenId: tokenDescriptor = `${deployerAddress}.micro-nthng::wrapped-nthng`
+const wmnoTokenId: tokenDescriptor = `${deployerAddress}.wrapped-nothing-v8::wrapped-nthng`
 
 const createTokenPC = (
   tokenId: tokenDescriptor,
