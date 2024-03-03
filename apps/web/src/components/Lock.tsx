@@ -13,7 +13,7 @@ import {
   createFungiblePostCondition,
 } from "@stacks/transactions"
 
-const SNAPSHOT_BLOCK_HEIGHT = 141_467
+const SNAPSHOT_BLOCK_HEIGHT = 141_469
 
 const network = new StacksMainnet()
 const deployerAddress = "SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ"
