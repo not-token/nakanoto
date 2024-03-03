@@ -140,8 +140,16 @@ function ContractCallVote() {
           <br />
         </p>
         {mnoBalance + wmnoBalance ? (
-          <p className="font-bold text-center">
-            You will wrap only <br />
+          <p className=" ">
+            As long as these tokens are in your wallet
+            <br />
+            you will be eligible to wrap them
+            <br />
+            <br />
+            if you transferred them to a different wallet you will have to
+            <br />
+            transfer them back or top up just enough to get this amount
+            <br />
             <br /> {wmnoBalance ? wmnoBalance + " $WMNO" : null} <br />{" "}
             {mnoBalance ? mnoBalance + " $MNO" : null}
           </p>
