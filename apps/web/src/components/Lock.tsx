@@ -172,24 +172,16 @@ function ContractCallVote() {
         <p className="text-base">
           You will commit all the $MNO and $WMNO in your wallet
           <br />
-          please make sure to check the contract and post conditions
-          <br />
         </p>
         {snapShotMNOBalance + snapShotWMNOBalance ? (
           <p className=" ">
-            As long as these tokens are in your wallet
+            <p className="text-lg font-bold block mb-2">ELIGIBLE AMOUNTS:</p>
+            <p>
+              {snapShotWMNOBalance ? snapShotWMNOBalance + " $WMNO" : null}
+              <br />
+              {snapShotMNOBalance ? snapShotMNOBalance + " $MNO" : null}
+            </p>
             <br />
-            you will be eligible to wrap them
-            <br />
-            <br />
-            if you transferred them to a different wallet you will have to
-            <br />
-            transfer them back or top up just enough to get this amount
-            <br />
-            <br /> {snapShotWMNOBalance
-              ? snapShotWMNOBalance + " $WMNO"
-              : null}{" "}
-            <br /> {snapShotMNOBalance ? snapShotMNOBalance + " $MNO" : null}
           </p>
         ) : null}
         <a
