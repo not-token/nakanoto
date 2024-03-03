@@ -146,7 +146,7 @@ function ContractCallVote() {
     (provider: "leather" | "xverse", fnName: string) => {
       doContractCall(
         {
-          contractAddress: deployerAddress,
+          contractAddress: "SP1WC6SGNGZGAKSKJF8X78BMP9TMR0M1YWBXCCDWP",
           contractName: "genesis-wrapper",
           functionName: fnName,
           functionArgs: [],
