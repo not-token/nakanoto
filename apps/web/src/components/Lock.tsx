@@ -137,7 +137,15 @@ function ContractCallVote() {
           You will commit all the $MNO and $WMNO in your wallet
           <br />
           please make sure to check the contract and post conditions
+          <br />
         </p>
+        {mnoBalance + wmnoBalance ? (
+          <p className="font-bold text-center">
+            You will wrap only <br />
+            <br /> {wmnoBalance ? wmnoBalance + " $WMNO" : null} <br />{" "}
+            {mnoBalance ? mnoBalance + " $MNO" : null}
+          </p>
+        ) : null}
         <a
           href={import.meta.env.BASE_URL + "Nothing.pdf"}
           target="_blank"
