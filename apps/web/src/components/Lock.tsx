@@ -152,7 +152,7 @@ function ContractCallVote() {
   }, [currentBalances, eligibleAmounts])
 
   const isEligibleToUnwrap = useMemo(() => {
-    return currentNOTBalance === eligibleAmounts
+    return currentNOTBalance > 0 && currentNOTBalance === eligibleAmounts
   }, [eligibleAmounts, currentBalances])
 
   const wrap = useCallback(
