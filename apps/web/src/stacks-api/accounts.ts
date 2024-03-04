@@ -13,7 +13,7 @@ export const accountsQK = createQueryKeys("accounts", {
     network: StacksNetwork
     untilBlock?: string
   }) => ({
-    queryKey: [address, network],
+    queryKey: [address, network, untilBlock],
     queryFn: async () => {
       const apiClientConfig = new Configuration({
         basePath: network.coreApiUrl,

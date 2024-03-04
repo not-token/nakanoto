@@ -2,7 +2,7 @@ import { useConnect } from "@stacks/connect-react"
 import { useQuery } from "@tanstack/react-query"
 import { queries } from "../stacks-api/queries"
 import { userSession } from "../user-session"
-import { StacksMainnet } from "@stacks/network"
+import { StacksMainnet, StacksMocknet } from "@stacks/network"
 import React, { useCallback, useMemo } from "react"
 import { AddressBalanceResponse } from "@stacks/blockchain-api-client"
 import {
@@ -13,14 +13,17 @@ import {
   createFungiblePostCondition,
 } from "@stacks/transactions"
 
-const SNAPSHOT_BLOCK_HEIGHT = 141_500
+const SNAPSHOT_BLOCK_HEIGHT = import.meta.env.DEV ? 4 : 141_500
 
-const network = new StacksMainnet()
-const deployerAddress = "SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ"
+const network = import.meta.env.DEV ? new StacksMocknet() : new StacksMainnet()
+const deployerAddress = import.meta.env.DEV
+  ? "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"
+  : "SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ"
 type tokenDescriptor = `${string}.${string}::${string}`
 
 const mnoTokenId: tokenDescriptor = `${deployerAddress}.micro-nthng::micro-nothing`
 const wmnoTokenId: tokenDescriptor = `${deployerAddress}.wrapped-nothing-v8::wrapped-nthng`
+const notTokenId: tokenDescriptor = `${deployerAddress}.not::NOT`
 
 const createTokenPC = (
   tokenId: tokenDescriptor,
@@ -72,10 +75,13 @@ function Walleton({
   )
 }
 
-const getTokenBalance = (balances: AddressBalanceResponse, tokenId: string) => {
+const getTokenBalance = (
+  balances: AddressBalanceResponse | undefined,
+  tokenId: string,
+) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (
-    (balances?.fungible_tokens[tokenId] as { balance: number })?.balance || 0
+  return Number(
+    (balances?.fungible_tokens[tokenId] as { balance: number })?.balance || 0,
   )
 }
 const providers = {
@@ -93,7 +99,8 @@ function ContractCallVote() {
   const { doContractCall } = useConnect()
   let address = ""
   if (userSession.isUserSignedIn()) {
-    address = userSession.loadUserData()?.profile.stxAddress.mainnet
+    const profile = userSession.loadUserData()?.profile.stxAddress
+    address = import.meta.env.DEV ? profile?.testnet : profile?.mainnet
   }
 
   const { data: snapShotBalances } = useQuery({
@@ -123,37 +130,82 @@ function ContractCallVote() {
       }
     }, [snapShotBalances])
 
-  const { mnoBalance: currentMNOBalance, wmnoBalance: currentWMNOBalance } =
-    useMemo(() => {
-      return {
-        mnoBalance: currentBalances
-          ? Number(getTokenBalance(currentBalances, mnoTokenId))
-          : 0,
-        wmnoBalance: currentBalances
-          ? Number(getTokenBalance(currentBalances, wmnoTokenId))
-          : 0,
-      }
-    }, [currentBalances])
+  const {
+    mnoBalance: currentMNOBalance,
+    wmnoBalance: currentWMNOBalance,
+    notBalance: currentNOTBalance,
+  } = useMemo(() => {
+    return {
+      mnoBalance: getTokenBalance(currentBalances, mnoTokenId),
+      wmnoBalance: getTokenBalance(currentBalances, wmnoTokenId),
+      notBalance: getTokenBalance(currentBalances, notTokenId),
+    }
+  }, [currentBalances])
+  const eligibleAmounts = useMemo(
+    () => snapShotMNOBalance + snapShotWMNOBalance,
+    [snapShotBalances],
+  )
 
-  const isEligibleToMint = useMemo(() => {
-    const eligibleAmounts = snapShotMNOBalance + snapShotWMNOBalance
+  const isEligibleToWrap = useMemo(() => {
     const currentBalance = currentMNOBalance + currentWMNOBalance
+    return eligibleAmounts > 0 && currentBalance >= eligibleAmounts
+  }, [currentBalances, eligibleAmounts])
 
-    return currentBalance >= eligibleAmounts
-  }, [])
+  const isEligibleToUnwrap = useMemo(() => {
+    return currentNOTBalance === eligibleAmounts
+  }, [eligibleAmounts, currentBalances])
 
-  const lockFn = useCallback(
-    (provider: "leather" | "xverse", fnName: string) => {
+  const wrap = useCallback(
+    (provider: "leather" | "xverse") => {
       doContractCall(
         {
           contractAddress: deployerAddress,
           contractName: "genesis-wrapper",
-          functionName: fnName,
+          functionName: "wrap",
           functionArgs: [],
           postConditionMode: PostConditionMode.Deny,
           postConditions: [
             createTokenPC(wmnoTokenId, snapShotWMNOBalance, address),
-            createTokenPC(mnoTokenId, snapShotMNOBalance, address),
+            createTokenPC(
+              mnoTokenId,
+              snapShotMNOBalance + snapShotWMNOBalance,
+              address,
+            ),
+            createTokenPC(
+              mnoTokenId,
+              snapShotWMNOBalance,
+              `${deployerAddress}.wrapped-nothing-v8`,
+            ),
+          ].filter((item) => item) as FungiblePostCondition[],
+          network,
+        },
+        providers[provider],
+      )
+    },
+    [doContractCall],
+  )
+
+  const unwrap = useCallback(
+    (provider: "leather" | "xverse") => {
+      doContractCall(
+        {
+          contractAddress: deployerAddress,
+          contractName: "genesis-wrapper",
+          functionName: "unwrap",
+          functionArgs: [],
+          postConditionMode: PostConditionMode.Deny,
+          postConditions: [
+            createTokenPC(
+              notTokenId,
+              snapShotWMNOBalance + snapShotMNOBalance,
+              address,
+            ),
+            createTokenPC(
+              mnoTokenId,
+              snapShotWMNOBalance + snapShotMNOBalance,
+              `${deployerAddress}.not`,
+            ),
+            createTokenPC(mnoTokenId, snapShotWMNOBalance, address),
           ].filter((item) => item) as FungiblePostCondition[],
           network,
         },
@@ -174,7 +226,7 @@ function ContractCallVote() {
           <br />
         </p>
         {snapShotMNOBalance + snapShotWMNOBalance ? (
-          <p className=" ">
+          <div className=" ">
             <p className="text-lg font-bold block mb-2">ELIGIBLE AMOUNTS:</p>
             <p>
               {snapShotWMNOBalance ? snapShotWMNOBalance + " $WMNO" : null}
@@ -182,7 +234,7 @@ function ContractCallVote() {
               {snapShotMNOBalance ? snapShotMNOBalance + " $MNO" : null}
             </p>
             <br />
-          </p>
+          </div>
         ) : null}
         <a
           href={import.meta.env.BASE_URL + "Nothing.pdf"}
@@ -192,27 +244,25 @@ function ContractCallVote() {
         >
           Read explainer here
         </a>
-        {isEligibleToMint ? (
-          <Walleton onClick={(provider) => lockFn(provider, "wrap")}>
-            Wrap all
-          </Walleton>
+        {isEligibleToWrap ? (
+          <Walleton onClick={(provider) => wrap(provider)}>Wrap all</Walleton>
         ) : (
-          <p className="text-red-500 text-center">
-            Current balance is less than eligible balance <br />
-            please top up or transfer back to continue <br />
-            There is no time limit take all the time you need
-          </p>
+          !isEligibleToUnwrap && (
+            <p className="text-red-500 text-center">
+              You are not eligible brah
+            </p>
+          )
         )}
       </div>
 
-      {/* <div className="flex flex-col items-center gap-4">
-        <p className="text-lg font-bold">You can always</p>
-        <Walleton
-          onClick={(provider) => lockFn(provider, "genesis-unwrap-wmno")}
-        >
-          Unwrap all
-        </Walleton>
-      </div> */}
+      {isEligibleToUnwrap && (
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-lg font-bold">You can always</p>
+          <Walleton onClick={(provider) => unwrap(provider)}>
+            Unwrap all
+          </Walleton>
+        </div>
+      )}
     </div>
   )
 }
