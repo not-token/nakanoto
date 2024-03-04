@@ -23,7 +23,7 @@ type tokenDescriptor = `${string}.${string}::${string}`
 
 const mnoTokenId: tokenDescriptor = `${deployerAddress}.micro-nthng::micro-nothing`
 const wmnoTokenId: tokenDescriptor = `${deployerAddress}.wrapped-nothing-v8::wrapped-nthng`
-const notTokenId: tokenDescriptor = `${deployerAddress}.not::NOT`
+const notTokenId: tokenDescriptor = `${deployerAddress}.nope::NOT`
 
 const createTokenPC = (
   tokenId: tokenDescriptor,
@@ -160,7 +160,7 @@ function ContractCallVote() {
       doContractCall(
         {
           contractAddress: deployerAddress,
-          contractName: "genesis-wrapper",
+          contractName: "napper",
           functionName: "wrap",
           functionArgs: [],
           postConditionMode: PostConditionMode.Deny,
@@ -190,7 +190,7 @@ function ContractCallVote() {
       doContractCall(
         {
           contractAddress: deployerAddress,
-          contractName: "genesis-wrapper",
+          contractName: "napper",
           functionName: "unwrap",
           functionArgs: [],
           postConditionMode: PostConditionMode.Deny,
