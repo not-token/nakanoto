@@ -13,7 +13,7 @@ import {
   createFungiblePostCondition,
 } from "@stacks/transactions"
 
-const SNAPSHOT_BLOCK_HEIGHT = import.meta.env.DEV ? 4 : 141_500
+const SNAPSHOT_BLOCK_HEIGHT = import.meta.env.DEV ? 4 : 141_576
 
 const network = import.meta.env.DEV ? new StacksMocknet() : new StacksMainnet()
 const deployerAddress = import.meta.env.DEV
