@@ -146,7 +146,7 @@ function ContractCallVote() {
     (provider: "leather" | "xverse", fnName: string) => {
       doContractCall(
         {
-          contractAddress: "SP1WC6SGNGZGAKSKJF8X78BMP9TMR0M1YWBXCCDWP",
+          contractAddress: deployerAddress,
           contractName: "genesis-wrapper",
           functionName: fnName,
           functionArgs: [],
@@ -193,7 +193,7 @@ function ContractCallVote() {
           Read explainer here
         </a>
         {isEligibleToMint ? (
-          <Walleton onClick={(provider) => lockFn(provider, "genesis-wrap")}>
+          <Walleton onClick={(provider) => lockFn(provider, "wrap")}>
             Wrap all
           </Walleton>
         ) : (
