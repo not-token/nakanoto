@@ -13,20 +13,20 @@ describe("example tests", () => {
   it("ensures simnet is well initalised", () => {
     expect(simnet.blockHeight).toBeDefined();
 
-    let res;
-    res = simnet.callPublicFn("fis-com-fis-sev", "claim", [], address1);
+    // let res;
+    // res = simnet.callPublicFn("fis-com-fis-sev", "claim", [], address1);
     // console.log(res.result);
-    res = simnet.callPublicFn("fis-com-fis-sev", "claim", [], address1);
+    // res = simnet.callPublicFn("fis-com-fis-sev", "claim", [], address1);
     // console.log(res.result);
-    res = simnet.callPublicFn("fis-com-fis-sev", "claim", [], address2);
+    // res = simnet.callPublicFn("fis-com-fis-sev", "claim", [], address2);
     // console.log(res.result);
 
-    simnet.mineEmptyBlocks(144 * 7);
+    // simnet.mineEmptyBlocks(144 * 7);
     // res = simnet.callPublicFn("fis-com-fis-sev", "claim", [], address1);
     // console.log(res.result);
     // res = simnet.callPublicFn("fis-com-fis-sev", "claim", [], address1);
     // console.log(res.result);
-    res = simnet.callPublicFn("fis-com-fis-sev", "claim", [], address2);
+    // res = simnet.callPublicFn("fis-com-fis-sev", "claim", [], address2);
     // console.log(res.result);
 
     // console.log(simnet.getAssetsMap());

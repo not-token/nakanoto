@@ -3,7 +3,7 @@
 (define-fungible-token wrapped-nthng)
 (define-data-var token-uri (optional (string-utf8 256)) none)
 (define-constant contract-creator tx-sender)
-(impl-trait .sip-010-trait-ft-standard.sip-010-trait)
+(impl-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 
 (define-public (donate (amount uint)) 
     (stx-transfer? amount tx-sender contract-creator))
@@ -29,11 +29,14 @@
 
 ;;;;;;;;;;;;;;;;;;;;; SIP 010 ;;;;;;;;;;;;;;;;;;;;;;
 
+
+        ;; #[allow(unchecked_params)]
 (define-public (transfer (amount uint) (from principal) (to principal) (memo (optional (buff 34))))
     (begin
         (asserts! (is-eq from tx-sender)
             (err ERR-UNAUTHORIZED))
 
+        ;; #[allow(unchecked_data)]
         (ft-transfer? wrapped-nthng amount from to)
     )
 )
@@ -56,6 +59,7 @@
 (define-public (set-token-uri (value (string-utf8 256)))
     (if 
         (is-eq tx-sender contract-creator)
+        ;; #[allow(unchecked_data)]
             (ok (var-set token-uri (some value))) 
         (err ERR-UNAUTHORIZED)))
 
@@ -83,4 +87,4 @@
         (map send-nothing-unwrap recipients)
         (ok true)))
 
-(wrap-nthng u20600000000000)
+(wrap-nthng u20000000000000)

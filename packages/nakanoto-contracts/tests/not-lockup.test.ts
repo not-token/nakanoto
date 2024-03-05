@@ -15,29 +15,7 @@ describe("example tests", () => {
   });
 
   it("shows an example", () => {
-    let result: ClarityValue;
-    const assetMap = simnet.getAssetsMap();
-    const oldMNO = assetMap.get(".micro-nthng.micro-nothing")!.get(address1)!;
-    result = simnet.callPublicFn(
-      "wrapped-nothing-v8",
-      "wrap-nthng",
-      [uintCV(oldMNO)],
-      address1
-    ).result;
-    console.log(cvToString(result));
-    result = simnet.callPublicFn(
-      "not-lockup",
-      "lock-wmno",
-      [],
-      address1
-    ).result;
-    console.log(cvToString(result));
-    result = simnet.callPublicFn(
-      "not-lockup",
-      "unlock-wmno",
-      [],
-      address1
-    ).result;
-    console.log(cvToString(result));
+    console.log(simnet.blockHeight);
+    console.log(simnet.runSnippet("u1"));
   });
 });

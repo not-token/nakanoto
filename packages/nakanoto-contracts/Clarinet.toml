@@ -4,64 +4,51 @@ description = ''
 authors = []
 telemetry = false
 cache_dir = './.cache'
-requirements = []
-[contracts.airdrop]
-path = 'contracts/airdrop.clar'
+
+[[project.requirements]]
+contract_id = 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard'
+
+# [[project.requirements]]
+# contract_id = 'SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ.micro-nthng'
+
+# [[project.requirements]]
+# contract_id = 'SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ.wrapped-nothing-v8'
+# [contracts.airdrop]
+# path = 'contracts/airdrop.clar'
+# clarity_version = 2
+# epoch = 2.4
+
+# [contracts.fis-com-fis-sev]
+# path = 'contracts/fis-com-fis-sev.clar'
+# clarity_version = 2
+# epoch = 2.4
+
+[contracts.napper]
+path = 'contracts/genesis-wrapper.clar'
 clarity_version = 2
 epoch = 2.4
 
-[contracts.fis-com-fis-sev]
-path = 'contracts/fis-com-fis-sev.clar'
+[contracts.nope]
+path = 'contracts/not-token.clar'
 clarity_version = 2
 epoch = 2.4
-
-[contracts.micro-nthng]
-path = 'contracts/micro-nthng.clar'
-clarity_version = 1
-epoch = 2.0
-
-[contracts.not-lockup]
-path = 'contracts/not-lockup.clar'
-clarity_version = 2
-epoch = 2.4
-
-[contracts.sip-010-trait-ft-standard]
-path = 'contracts/sip-010-trait-ft-standard.clar'
-clarity_version = 1
-epoch = 2.0
-
-[contracts.sip-10-ft-standard]
-path = 'contracts/sip-10-ft-standard.clar'
-clarity_version = 1
-epoch = 2.0
-
-
-[contracts.wrapped-nothing-v5]
-path = 'contracts/wrapped-nothing-v5.clar'
-clarity_version = 1
-epoch = 2.0
-
-[contracts.wrapped-nothing-v6]
-path = 'contracts/wrapped-nothing-v6.clar'
-clarity_version = 1
-epoch = 2.0
 
 [contracts.wrapped-nothing-v8]
 path = 'contracts/wrapped-nothing-v8.clar'
 clarity_version = 1
 epoch = 2.0
 
-[contracts.not-token]
-path = 'contracts/not-token.clar'
-clarity_version = 2
-epoch = 2.4
+[contracts.micro-nthng]
+path = 'contracts/micro-nthng.clar'
+clarity_version = 1
+epoch = 2.0
 
 [repl]
 clarity_wasm_mode = false
 show_timings = false
 
 [repl.analysis]
-passes = []
+passes = ['check_checker']
 
 [repl.analysis.check_checker]
 strict = false
