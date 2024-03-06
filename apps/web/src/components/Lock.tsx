@@ -209,7 +209,7 @@ function ContractCallVote() {
               snapShotWMNOBalance + snapShotMNOBalance,
               `${deployerAddress}.not`,
             ),
-            createTokenPC(mnoTokenId, snapShotWMNOBalance, address),
+            createTokenPC(wmnoTokenId, snapShotWMNOBalance, address),
           ].filter((item) => item) as FungiblePostCondition[],
           network,
         },
