@@ -9,14 +9,18 @@ import {
   FungibleConditionCode,
   FungiblePostCondition,
   PostConditionMode,
+  ResponseOkCV,
   createAssetInfo,
   createFungiblePostCondition,
+  cvToValue,
+  hexToCV,
 } from "@stacks/transactions"
+const isDev = false
 
-const SNAPSHOT_BLOCK_HEIGHT = import.meta.env.DEV ? 4 : 141_576
+const SNAPSHOT_BLOCK_HEIGHT = isDev ? 4 : 141_576
 
-const network = import.meta.env.DEV ? new StacksMocknet() : new StacksMainnet()
-const deployerAddress = import.meta.env.DEV
+const network = isDev ? new StacksMocknet() : new StacksMainnet()
+const deployerAddress = isDev
   ? "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"
   : "SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ"
 type tokenDescriptor = `${string}.${string}::${string}`
@@ -100,7 +104,7 @@ function ContractCallVote() {
   let address = ""
   if (userSession.isUserSignedIn()) {
     const profile = userSession.loadUserData()?.profile.stxAddress
-    address = import.meta.env.DEV ? profile?.testnet : profile?.mainnet
+    address = isDev ? profile?.testnet : profile?.mainnet
   }
 
   const { data: snapShotBalances } = useQuery({
@@ -215,9 +219,35 @@ function ContractCallVote() {
     [doContractCall],
   )
 
+  const { data: supply } = useQuery({
+    ...queries.contracts.readOnly({
+      address: deployerAddress,
+      name: "nope",
+      fnName: "get-total-supply",
+      args: [],
+      network,
+      sender: address,
+    }),
+  })
+
+  const totalSupply = useMemo(() => {
+    if (supply) {
+      const okCV = hexToCV(supply.result!) as ResponseOkCV
+      return Number(cvToValue(okCV.value))
+    }
+    return 0
+  }, [supply])
+
+  const percentageWrapped = useMemo(() => {
+    if (totalSupply) {
+      return Math.floor((totalSupply / 89e12) * 100)
+    }
+  }, [totalSupply])
+
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="flex flex-col items-center gap-8">
+        <h2 className="text-lg font-bold">{percentageWrapped}% wrapped</h2>
         <p className="text-lg font-bold">
           Use one of the wallets to rewrap $MNO and $WMNO to $NOT
         </p>
