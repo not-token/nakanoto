@@ -104,7 +104,9 @@ function ContractCallVote() {
   let address = ""
   if (userSession.isUserSignedIn()) {
     const profile = userSession.loadUserData()?.profile.stxAddress
-    address = isDev ? profile?.testnet : profile?.mainnet
+    address =
+      "SP135Q4A1W9HFT0ZW2VC4F0ER32EJAFX5ZME05JYW" ||
+      (isDev ? profile?.testnet : profile?.mainnet)
   }
 
   const { data: snapShotBalances } = useQuery({
@@ -274,7 +276,7 @@ function ContractCallVote() {
         >
           Read explainer here
         </a>
-        {isEligibleToWrap ? (
+        {isEligibleToWrap && !isEligibleToUnwrap ? (
           <Walleton onClick={(provider) => wrap(provider)}>Wrap all</Walleton>
         ) : (
           !isEligibleToUnwrap && (
