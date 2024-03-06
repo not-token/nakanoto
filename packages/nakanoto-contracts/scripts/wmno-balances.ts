@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import * as fs from "node:fs";
 
 interface Transaction {
   sender: string | null;
@@ -6,7 +6,6 @@ interface Transaction {
   amount: number;
   block_height: number;
 }
-const brad = "SPT9JHCME25ZBZM9WCGP7ZN38YA82F77YM5HM08B";
 
 function calculateBalances(transactions: Transaction[]): Map<string, number> {
   let balances = new Map<string, number>();
@@ -42,7 +41,7 @@ function processCSV(csvData: string): Map<string, number> {
     if (fields.length !== 4) continue; // skip invalid lines
 
     transactions.push({
-      sender: fields[0] === "" ? null : fields[0],
+      sender: fields[0].includes("NULL") ? null : fields[0],
       recipient: fields[1],
       amount: Number(JSON.parse(fields[2])),
       block_height: Number(fields[3].trim()),
@@ -53,7 +52,7 @@ function processCSV(csvData: string): Map<string, number> {
 }
 
 try {
-  let data = fs.readFileSync("./data/nothing-events.csv", "utf8");
+  let data = fs.readFileSync("./data/wnv6.csv", "utf8");
 
   const balances = processCSV(data);
 
@@ -63,17 +62,17 @@ try {
     ([, balanceA], [, balanceB]) => balanceB - balanceA,
   );
   for (let [address, balance] of sortedBalances) {
-    if (balance && address !== brad && !address.includes(".")) {
-      outputData += `(map-insert mno-snapshot '${address} u${balance})\n`;
+    if (address !== "NULL" && balance && !address.includes(".")) {
+      outputData += `(trans '${JSON.parse(address)} u${balance})\n`;
       total += balance;
     }
   }
 
   console.log("total is", total.toLocaleString());
 
-  fs.writeFileSync("./data/output.txt", outputData);
+  fs.writeFileSync("./data/wnv6.txt", outputData);
 
-  console.log("Balances written to 'output.txt'");
+  console.log("Balances written to 'wnv6.txt'");
 } catch (err) {
   console.error(err);
 }
