@@ -91,10 +91,10 @@ importers:
         specifier: ^7.8.2
         version: 7.8.2
       '@stacks/connect':
-        specifier: ^7.7.0
+        specifier: ^7.7.1
         version: 7.7.1
       '@stacks/connect-react':
-        specifier: ^22.4.1
+        specifier: ^22.4.2
         version: 22.4.2(react-dom@18.2.0)(react@18.2.0)
       '@stacks/network':
         specifier: ^6.11.3
