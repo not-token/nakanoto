@@ -1,0 +1,12 @@
+{
+    "sip": 16,
+    "name": "Nothing",
+    "description": "First meme to be settled on Bitcoin || First Token on Stacks || Circa block #5235, FEB 2021",
+    "image": "https://ipfs.io/ipfs/bafkreieug75i7f74at6gailpsox52lgs2ct7zccht5nobik3giv4opkeuu",
+    "properties": {
+        "decimals": 0,
+        "external_url": "https://nothingtoken.xyz",
+        "total_supply": 88975877083900,
+        "created": 1614442830
+    }
+}

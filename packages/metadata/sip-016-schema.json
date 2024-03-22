@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Token Metadata",
+  "type": "object",
+  "required": ["sip", "name"],
+  "properties": {
+    "sip": {
+      "type": "number",
+      "description": "SIP number that defines the JSON schema for metadata. For this SIP, the sip number must be `16`."
+    },
+    "name": {
+      "type": "string",
+      "description": "Identifies the asset which this token represents"
+    },
+    "description": {
+      "type": "string",
+      "description": "Describes the asset which this token represents"
+    },
+    "image": {
+      "type": "string",
+      "description": "A URI pointing to a resource with MIME type image/* representing the asset to which this token represents. Consider making any images at a width between 320 and 1080 pixels and aspect ratio between 1.91:1 and 4:5 inclusive. If the token represents a media file of different MIME type or of higher quality defined in property 'raw_media_file_uri', then this image should be used as preview image like a cover for music, or an low-res image."
+    },
+    "attributes": {
+      "type": "array",
+      "description": "Additional attributes of the token that are \"observable\". See section below. Values may be strings, numbers, object or arrays.",
+      "items": {
+        "type": "object",
+        "required": ["trait_type", "value"],
+        "properties": {
+          "display_type": { "type": "string" },
+          "trait_type": { "type": "string" },
+          "value": {
+            "anyOf": [
+              { "type": "object" },
+              { "type": "string" },
+              { "type": "number" },
+              { "type": "integer" },
+              { "type": "boolean" },
+              { "type": "array" }
+            ]
+          }
+        }
+      }
+    },
+    "properties": {
+      "type": "object",
+      "description": "Additional other properties of the token. See section below. Values may be strings, numbers, object or arrays."
+    },
+    "localization": {
+      "type": "object",
+      "required": ["uri", "default", "locales"],
+      "properties": {
+        "uri": {
+          "type": "string",
+          "description": "The URI pattern to fetch localized data from. This URI should contain the substring `{locale}` which will be replaced with the appropriate locale value before sending the request. See section about localization for more rules"
+        },
+        "default": {
+          "type": "string",
+          "description": "The locale of the default data within the base JSON"
+        },
+        "locales": {
+          "type": "array",
+          "description": "The list of locales for which data is available. These locales should conform to those defined in the Unicode Common Locale Data Repository (http://cldr.unicode.org/)."
+        }
+      }
+    },
+    "image_data": {
+      "type": "string",
+      "description": "Raw SVG image data. Deprecated. Use `properties.image_data`."
+    },
+    "external_url": {
+      "type": "string",
+      "description": "Url to view the item on a 3rd party web site. Deprecated. Use `properties.external_url`."
+    },
+    "animation_url": {
+      "type": "string",
+      "description": "URL to a multi-media attachment for the item. Deprecated. Use `properties.animation_url`."
+    }
+  }
+}
