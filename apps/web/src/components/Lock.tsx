@@ -134,17 +134,13 @@ function ContractCallVote() {
       }
     }, [snapShotBalances])
 
-  const {
-    mnoBalance: currentMNOBalance,
-    wmnoBalance: currentWMNOBalance,
-    notBalance: currentNOTBalance,
-  } = useMemo(() => {
-    return {
-      mnoBalance: getTokenBalance(currentBalances, mnoTokenId),
-      wmnoBalance: getTokenBalance(currentBalances, wmnoTokenId),
-      notBalance: getTokenBalance(currentBalances, notTokenId),
-    }
-  }, [currentBalances])
+  const { mnoBalance: currentMNOBalance, wmnoBalance: currentWMNOBalance } =
+    useMemo(() => {
+      return {
+        mnoBalance: getTokenBalance(currentBalances, mnoTokenId),
+        wmnoBalance: getTokenBalance(currentBalances, wmnoTokenId),
+      }
+    }, [currentBalances])
   const eligibleAmounts = useMemo(
     () => snapShotMNOBalance + snapShotWMNOBalance,
     [snapShotBalances],
@@ -154,10 +150,6 @@ function ContractCallVote() {
     const currentBalance = currentMNOBalance + currentWMNOBalance
     return eligibleAmounts > 0 && currentBalance >= eligibleAmounts
   }, [currentBalances, eligibleAmounts])
-
-  const isEligibleToUnwrap = useMemo(() => {
-    return currentNOTBalance > 0 && currentNOTBalance === eligibleAmounts
-  }, [eligibleAmounts, currentBalances])
 
   const wrap = useCallback(
     (provider: "leather" | "xverse") => {
@@ -180,36 +172,6 @@ function ContractCallVote() {
               snapShotWMNOBalance,
               `${deployerAddress}.wrapped-nothing-v8`,
             ),
-          ].filter((item) => item) as FungiblePostCondition[],
-          network,
-        },
-        providers[provider],
-      )
-    },
-    [doContractCall],
-  )
-
-  const unwrap = useCallback(
-    (provider: "leather" | "xverse") => {
-      doContractCall(
-        {
-          contractAddress: deployerAddress,
-          contractName: "napper",
-          functionName: "unwrap",
-          functionArgs: [],
-          postConditionMode: PostConditionMode.Deny,
-          postConditions: [
-            createTokenPC(
-              notTokenId,
-              snapShotWMNOBalance + snapShotMNOBalance,
-              address,
-            ),
-            createTokenPC(
-              mnoTokenId,
-              snapShotWMNOBalance + snapShotMNOBalance,
-              `${deployerAddress}.not`,
-            ),
-            createTokenPC(wmnoTokenId, snapShotWMNOBalance, address),
           ].filter((item) => item) as FungiblePostCondition[],
           network,
         },
@@ -274,25 +236,12 @@ function ContractCallVote() {
         >
           Read explainer here
         </a>
-        {isEligibleToWrap && !isEligibleToUnwrap ? (
+        {isEligibleToWrap ? (
           <Walleton onClick={(provider) => wrap(provider)}>Wrap all</Walleton>
         ) : (
-          !isEligibleToUnwrap && (
-            <p className="text-red-500 text-center">
-              You are not eligible brah
-            </p>
-          )
+          <p className="text-red-500 text-center">You are not eligible brah</p>
         )}
       </div>
-
-      {isEligibleToUnwrap && (
-        <div className="flex flex-col items-center gap-4">
-          <p className="text-lg font-bold">You can always</p>
-          <Walleton onClick={(provider) => unwrap(provider)}>
-            Unwrap all
-          </Walleton>
-        </div>
-      )}
     </div>
   )
 }
